@@ -17,7 +17,8 @@ import UIKit
 //    조건 4: 소스트리 쓰기 -> 터미널 사용 X (불편하게 왜 씀?)
 
 class MainViewController: UIViewController {
-
+    var label: UILabel!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
@@ -26,14 +27,9 @@ class MainViewController: UIViewController {
 }
 
 extension MainViewController {
-    
-//    var resultLabel: UILabel!
-    // 소스트리 연동 확인 중
-    
-    
-    func configureView() {
+
+    func configureLabel() {
         
     }
-    
     
 }
