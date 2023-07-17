@@ -17,19 +17,54 @@ import UIKit
 //    조건 4: 소스트리 쓰기 -> 터미널 사용 X (불편하게 왜 씀?)
 
 class MainViewController: UIViewController {
-    var label: UILabel!
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view.
-    }
-
-}
-
-extension MainViewController {
-
-    func configureLabel() {
-        
+        self.view.addSubview(resultLabel)
     }
     
+    // 결과값 도출 Label 코드
+    lazy var resultLabel: UILabel = {
+       
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        
+        self.view.addSubview(label)
+        label.text = "0"
+        label.textAlignment = .right
+        label.numberOfLines = 1
+        label.layer.borderWidth = 1
+        label.layer.borderColor = UIColor.white.cgColor
+        label.font = UIFont.systemFont(ofSize: 40, weight: .bold)
+        
+        let labelAnchor: Void = NSLayoutConstraint.activate([
+            label.centerXAnchor.constraint(equalTo: view.centerXAnchor, constant: 0), // X축
+            label.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor, constant: 20), // Top
+            label.leadingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.leadingAnchor, constant: 20), // Leading
+            label.heightAnchor.constraint(equalToConstant: 150), // Height
+        ])
+        
+        label.layer.cornerRadius = 8 // CornerRadius
+        
+        return label
+    }()
+    
+    // StackView - 제일 큰 스택뷰
+    // 큰 스택뷰(Vertical) -> 1차 작은 스택뷰(Horizontal)*4 -> 버튼
+    lazy var stackView: UIStackView = {
+       
+        let stackView = UIStackView()
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        
+        return stackView
+    }()
+    
+    // 버튼
+    lazy var button: UIButton = {
+        
+        let button = UIButton()
+        
+        return button
+    }()
 }
+
