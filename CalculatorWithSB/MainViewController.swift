@@ -27,7 +27,8 @@ class MainViewController: UIViewController {
 
 extension MainViewController {
     
-    var resultLabel: UILabel!
+//    var resultLabel: UILabel!
+    // 소스트리 연동 확인 중
     
     
     func configureView() {
