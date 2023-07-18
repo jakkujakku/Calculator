@@ -18,31 +18,10 @@ import UIKit
 
 enum Operation {
     case Add // 더하기
-    case Minus // 빼기
+    case Subtract // 빼기
     case Multiple // 곱하기
     case Divide // 빼기
     case None
-}
-
-
-//MARK: - 결과 레이블 패딩 값
-
-class PaddingLabel: UILabel {
-
-    var topInset: CGFloat = 0
-    var bottomInset: CGFloat = 0
-    var leftInset: CGFloat = 0
-    var rightInset: CGFloat = 10
-    
-    override func drawText(in rect: CGRect) {
-        let insets = UIEdgeInsets.init(top: topInset, left: leftInset, bottom: bottomInset, right: rightInset)
-        super.drawText(in: rect.inset(by: insets))
-    }
-
-    override var intrinsicContentSize: CGSize {
-    let size = super.intrinsicContentSize
-    return CGSize(width: size.width + leftInset + rightInset, height: size.height + topInset + bottomInset)
-    }
 }
 
 //MARK: - UI 코드
@@ -63,7 +42,7 @@ class MainViewController: UIViewController {
         self.view.addSubview(self.bigStackView)
     }
     
-    //MARK: - resultLabel
+//MARK: - resultLabel
     // 결과값 도출 Label 코드
     lazy var resultLabel: UILabel = {
         
@@ -78,7 +57,6 @@ class MainViewController: UIViewController {
         label.layer.borderColor = UIColor.white.cgColor
         label.font = UIFont.systemFont(ofSize: 40, weight: .bold)
         
-        
         let labelAnchor: Void = NSLayoutConstraint.activate([
             label.centerXAnchor.constraint(equalTo: view.centerXAnchor, constant: 0), // X축
             label.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor, constant: 20), // Top
@@ -91,13 +69,10 @@ class MainViewController: UIViewController {
         return label
     }()
     
-    //MARK: - 스택뷰
+//MARK: - 스택뷰
     // bigStackView - 전체 포함하는 스택뷰
-    // 큰 스택뷰(Vertical) -> 1차 작은 스택뷰(Horizontal)*4 -> 버튼
     lazy var bigStackView: UIStackView = {
-        
         let bigStackView = UIStackView(arrangedSubviews: [smallStackView01, smallStackView02, smallStackView03, smallStackView04, smallStackView05])
-        
         bigStackView.translatesAutoresizingMaskIntoConstraints = false
         
         bigStackView.axis = .vertical
@@ -112,7 +87,7 @@ class MainViewController: UIViewController {
             bigStackView.bottomAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.bottomAnchor, constant: -50),
             bigStackView.leadingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.leadingAnchor, constant: 20),
             bigStackView.centerXAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.centerXAnchor),
-            
+
             bigStackView.heightAnchor.constraint(equalToConstant: 150),
         ])
         
@@ -124,9 +99,6 @@ class MainViewController: UIViewController {
         let smallStackView01 = UIStackView(arrangedSubviews: [buttonAC, smallStackView07])
         
         smallStackView01.translatesAutoresizingMaskIntoConstraints = false
-        
-        //        smallStackView01.layer.borderWidth = 1
-        //        smallStackView01.layer.borderColor = UIColor.white.cgColor
         
         smallStackView01.axis = .horizontal
         smallStackView01.alignment = .fill
@@ -144,18 +116,11 @@ class MainViewController: UIViewController {
         
         smallStackView02.translatesAutoresizingMaskIntoConstraints = false
         
-        //        smallStackView02.layer.borderWidth = 1
-        //        smallStackView02.layer.borderColor = UIColor.white.cgColor
-        
         smallStackView02.axis = .horizontal
         smallStackView02.alignment = .fill
         smallStackView02.distribution = .fillEqually
         smallStackView02.spacing = 10
-        
-        let stackViewAnchor: Void = NSLayoutConstraint.activate([
-            
-        ])
-        
+
         return smallStackView02
     }()
     
@@ -165,17 +130,11 @@ class MainViewController: UIViewController {
         
         smallStackView03.translatesAutoresizingMaskIntoConstraints = false
         
-        //        smallStackView03.layer.borderWidth = 1
-        //        smallStackView03.layer.borderColor = UIColor.white.cgColor
-        
         smallStackView03.axis = .horizontal
         smallStackView03.alignment = .fill
         smallStackView03.distribution = .fillEqually
         smallStackView03.spacing = 10
         
-        let stackViewAnchor: Void = NSLayoutConstraint.activate([
-            
-        ])
         return smallStackView03
     }()
     
@@ -185,18 +144,10 @@ class MainViewController: UIViewController {
         
         smallStackView04.translatesAutoresizingMaskIntoConstraints = false
         
-        //        smallStackView04.layer.borderWidth = 1
-        //        smallStackView04.layer.borderColor = UIColor.white.cgColor
-        
         smallStackView04.axis = .horizontal
         smallStackView04.alignment = .fill
         smallStackView04.distribution = .fillEqually
         smallStackView04.spacing = 10
-        
-        
-        let stackViewAnchor: Void = NSLayoutConstraint.activate([
-            
-        ])
         
         return smallStackView04
     }()
@@ -207,14 +158,10 @@ class MainViewController: UIViewController {
         
         smallStackView05.translatesAutoresizingMaskIntoConstraints = false
         
-        //        smallStackView05.layer.borderWidth = 1
-        //        smallStackView05.layer.borderColor = UIColor.white.cgColor
-        //
         smallStackView05.axis = .horizontal
         smallStackView05.alignment = .fill
         smallStackView05.distribution = .equalSpacing
         smallStackView05.spacing = 10
-        
         
         buttonZero.widthAnchor.constraint(equalToConstant: 170).isActive = true
         
@@ -226,9 +173,6 @@ class MainViewController: UIViewController {
         let smallStackView06 = UIStackView(arrangedSubviews: [buttonDot, buttonEqual])
         
         smallStackView06.translatesAutoresizingMaskIntoConstraints = false
-        
-        //        smallStackView06.layer.borderWidth = 1
-        //        smallStackView06.layer.borderColor = UIColor.white.cgColor
         
         smallStackView06.axis = .horizontal
         smallStackView06.alignment = .fill
@@ -246,9 +190,6 @@ class MainViewController: UIViewController {
         
         smallStackView07.translatesAutoresizingMaskIntoConstraints = false
         
-        //        smallStackView06.layer.borderWidth = 1
-        //        smallStackView06.layer.borderColor = UIColor.white.cgColor
-        
         smallStackView07.axis = .horizontal
         smallStackView07.alignment = .fill
         smallStackView07.distribution = .fillEqually
@@ -258,7 +199,7 @@ class MainViewController: UIViewController {
         
         return smallStackView07
     }()
-    //MARK: - 버튼
+//MARK: - 버튼
     // +/- 버튼
     lazy var buttonSign: UIButton = {
         
@@ -432,8 +373,6 @@ class MainViewController: UIViewController {
         return buttonOne
     }()
     
-    
-    
     // 2버튼
     lazy var buttonTwo: UIButton = {
         
@@ -578,7 +517,7 @@ class MainViewController: UIViewController {
         return buttonNine
     }()
     
-    //MARK: - 기능 구현 코드
+//MARK: - 기능 구현 코드
     
     // 더하기
     @objc func add() {
@@ -587,14 +526,11 @@ class MainViewController: UIViewController {
         } else {
             self.operation(.Add)
         }
-        
     }
     
     // 빼기
     @objc func minus(_ button: UIButton) {
- 
-        self.operation(.Minus)
-  
+        self.operation(.Subtract)
     }
     
     // 곱하기
@@ -613,7 +549,6 @@ class MainViewController: UIViewController {
         } else {
             self.operation(.Divide)
         }
-        
     }
     
     // .
@@ -667,31 +602,28 @@ class MainViewController: UIViewController {
                 
                 self.secondInput = self.displayNumber
                 self.displayNumber = ""
-                
 
                 guard var firstInput = Double(self.firstInput) else { return }
-                //                print("This is FirstInput \(firstInput)")
                 guard var secondInput = Double(self.secondInput) else { return }
-                //                print("This is SecondInput: \(secondInput)")
-                
+
                 switch self.current {
                 case .Add: // 더하기
+                    let addResult = AddOperation().CalculatorAdd(firstInput, secondInput)
                     
-                    self.result = String(firstInput + secondInput)
+                    self.result = addResult
+                case .Subtract: // 빼기
+                    let subtractResult = SubtractOperation().CalculatorSubtract(firstValue: firstInput, secondValue: secondInput)
                     
-                case .Minus: // 빼기
-                    
-                    self.result = String(firstInput - secondInput)
+                    self.result = subtractResult
                     
                 case .Multiple: // 곱하기
-                    
-                    self.result = String(firstInput * secondInput)
-                    
+                    let multipleResult = MultiplyOperation().CalculatorMultiply(firstValue: firstInput, secondValue: secondInput)
+                    self.result = multipleResult
                     
                 case .Divide: // 나누기
-                    
+                    let divideResult = DivideOperation().CalculatorDivide(firstValue: firstInput, secondValue: secondInput)
                     if secondInput != 0 {
-                        self.result = String(firstInput / secondInput)
+                        self.result = divideResult
                     } else {
                         NoDivideAlert()
                     }
@@ -712,9 +644,7 @@ class MainViewController: UIViewController {
                     showAlert()
                 }
             }
-            
             self.current = operation
-            
         } else {
             self.firstInput = self.displayNumber
             self.current = operation
@@ -727,7 +657,6 @@ class MainViewController: UIViewController {
         let confirmAlert = UIAlertAction(title: "확인", style: .default) { _ in
             self.resultLabel.text = String(0)
         }
-        
         alert.addAction(confirmAlert)
         self.present(alert, animated: true)
     }
@@ -737,10 +666,8 @@ class MainViewController: UIViewController {
         let confirmAlert = UIAlertAction(title: "확인", style: .default) { _ in
             self.resultLabel.text = String(0)
         }
-        
         alert.addAction(confirmAlert)
         self.present(alert, animated: true)
     }
-    
 }
 
