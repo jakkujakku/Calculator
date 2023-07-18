@@ -9,12 +9,21 @@ import UIKit
 
 // 해야하는 과정 && 조건
 // 1. UI 구성 ✅ -> 오토레이아웃 코드 일부 수정 필요(상수값 수정 바람)
-// 2. Calculator 구현 -> 더하기(+), 빼기(-), 곱하기(*), 나누기(/), 소수점 표시(.), 양/음 표시(+/-), 결과 출력
-// 3. 스위치 구문 사용해서 추상화 -> AbstractOperation
+// 2. Calculator 구현 -> 더하기(+) ✅, 빼기(-) ✅, 곱하기(*) ✅, 나누기(/) ✅, 소수점 표시(.) ✅, 양/음 표시(+/-), 결과 출력 ✅
+// 3. 스위치 구문 사용해서 추상화 -> AbstractOperation (이거 어케해야함?)
 // 4. 조건 1: SB 사용 금지 ✅
 //    조건 2: 프로토콜 사용
 //    조건 3: 유지보수 용이하게 UI와 기능 분리 + 각 기능들 코드 분리할 것
-//    조건 4: 소스트리 쓰기 -> 터미널 사용 X (불편하게 왜 씀?)
+//    조건 4: 소스트리 쓰기 -> 터미널 사용 X (불편하게 왜 씀?) ✅
+
+enum Operation {
+    case Add // 더하기
+    case Minus // 빼기
+    case Multiple // 곱하기
+    case Divide // 빼기
+    case None
+}
+
 
 //MARK: - 결과 레이블 패딩 값
 
@@ -41,10 +50,11 @@ class PaddingLabel: UILabel {
 class MainViewController: UIViewController {
     
     var displayNumber = ""
-    var firstInput = ""
-    var secondInput = ""
+    var firstInput = "" // 처음 입력 값
+    var secondInput = "" // 부호 입력 후 입력 값
     var result = ""
-    var sign: Bool = false
+    var sign = false
+    var current: Operation = .None
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -53,14 +63,10 @@ class MainViewController: UIViewController {
         self.view.addSubview(self.bigStackView)
     }
     
-    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        print(#function)
-    }
-    
-//MARK: - resultLabel
+    //MARK: - resultLabel
     // 결과값 도출 Label 코드
     lazy var resultLabel: UILabel = {
-       
+        
         let label = PaddingLabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         
@@ -85,11 +91,11 @@ class MainViewController: UIViewController {
         return label
     }()
     
-//MARK: - 스택뷰
+    //MARK: - 스택뷰
     // bigStackView - 전체 포함하는 스택뷰
     // 큰 스택뷰(Vertical) -> 1차 작은 스택뷰(Horizontal)*4 -> 버튼
     lazy var bigStackView: UIStackView = {
-       
+        
         let bigStackView = UIStackView(arrangedSubviews: [smallStackView01, smallStackView02, smallStackView03, smallStackView04, smallStackView05])
         
         bigStackView.translatesAutoresizingMaskIntoConstraints = false
@@ -116,11 +122,11 @@ class MainViewController: UIViewController {
     // AC, (+/-, 나누기)
     lazy var smallStackView01: UIStackView = {
         let smallStackView01 = UIStackView(arrangedSubviews: [buttonAC, smallStackView07])
-
+        
         smallStackView01.translatesAutoresizingMaskIntoConstraints = false
         
-//        smallStackView01.layer.borderWidth = 1
-//        smallStackView01.layer.borderColor = UIColor.white.cgColor
+        //        smallStackView01.layer.borderWidth = 1
+        //        smallStackView01.layer.borderColor = UIColor.white.cgColor
         
         smallStackView01.axis = .horizontal
         smallStackView01.alignment = .fill
@@ -138,8 +144,8 @@ class MainViewController: UIViewController {
         
         smallStackView02.translatesAutoresizingMaskIntoConstraints = false
         
-//        smallStackView02.layer.borderWidth = 1
-//        smallStackView02.layer.borderColor = UIColor.white.cgColor
+        //        smallStackView02.layer.borderWidth = 1
+        //        smallStackView02.layer.borderColor = UIColor.white.cgColor
         
         smallStackView02.axis = .horizontal
         smallStackView02.alignment = .fill
@@ -159,8 +165,8 @@ class MainViewController: UIViewController {
         
         smallStackView03.translatesAutoresizingMaskIntoConstraints = false
         
-//        smallStackView03.layer.borderWidth = 1
-//        smallStackView03.layer.borderColor = UIColor.white.cgColor
+        //        smallStackView03.layer.borderWidth = 1
+        //        smallStackView03.layer.borderColor = UIColor.white.cgColor
         
         smallStackView03.axis = .horizontal
         smallStackView03.alignment = .fill
@@ -179,8 +185,8 @@ class MainViewController: UIViewController {
         
         smallStackView04.translatesAutoresizingMaskIntoConstraints = false
         
-//        smallStackView04.layer.borderWidth = 1
-//        smallStackView04.layer.borderColor = UIColor.white.cgColor
+        //        smallStackView04.layer.borderWidth = 1
+        //        smallStackView04.layer.borderColor = UIColor.white.cgColor
         
         smallStackView04.axis = .horizontal
         smallStackView04.alignment = .fill
@@ -201,14 +207,14 @@ class MainViewController: UIViewController {
         
         smallStackView05.translatesAutoresizingMaskIntoConstraints = false
         
-//        smallStackView05.layer.borderWidth = 1
-//        smallStackView05.layer.borderColor = UIColor.white.cgColor
-//
+        //        smallStackView05.layer.borderWidth = 1
+        //        smallStackView05.layer.borderColor = UIColor.white.cgColor
+        //
         smallStackView05.axis = .horizontal
         smallStackView05.alignment = .fill
         smallStackView05.distribution = .equalSpacing
         smallStackView05.spacing = 10
-
+        
         
         buttonZero.widthAnchor.constraint(equalToConstant: 170).isActive = true
         
@@ -221,8 +227,8 @@ class MainViewController: UIViewController {
         
         smallStackView06.translatesAutoresizingMaskIntoConstraints = false
         
-//        smallStackView06.layer.borderWidth = 1
-//        smallStackView06.layer.borderColor = UIColor.white.cgColor
+        //        smallStackView06.layer.borderWidth = 1
+        //        smallStackView06.layer.borderColor = UIColor.white.cgColor
         
         smallStackView06.axis = .horizontal
         smallStackView06.alignment = .fill
@@ -240,8 +246,8 @@ class MainViewController: UIViewController {
         
         smallStackView07.translatesAutoresizingMaskIntoConstraints = false
         
-//        smallStackView06.layer.borderWidth = 1
-//        smallStackView06.layer.borderColor = UIColor.white.cgColor
+        //        smallStackView06.layer.borderWidth = 1
+        //        smallStackView06.layer.borderColor = UIColor.white.cgColor
         
         smallStackView07.axis = .horizontal
         smallStackView07.alignment = .fill
@@ -252,7 +258,7 @@ class MainViewController: UIViewController {
         
         return smallStackView07
     }()
-//MARK: - 버튼
+    //MARK: - 버튼
     // +/- 버튼
     lazy var buttonSign: UIButton = {
         
@@ -264,7 +270,7 @@ class MainViewController: UIViewController {
         
         buttonPlusMinus.translatesAutoresizingMaskIntoConstraints = false
         
-        buttonPlusMinus.setTitle("+/-", for: .normal)
+        buttonPlusMinus.setTitle("+ / -", for: .normal)
         buttonPlusMinus.setTitleColor(.white, for: .normal)
         buttonPlusMinus.addTarget(self, action: #selector(signChange(_:)), for: .touchUpInside)
         
@@ -302,6 +308,7 @@ class MainViewController: UIViewController {
         
         buttonDivide.setTitle("÷", for: .normal)
         buttonDivide.setTitleColor(.white, for: .normal)
+        buttonDivide.addTarget(self, action: #selector(divide(_:)), for: .touchUpInside)
         return buttonDivide
     }()
     
@@ -318,6 +325,7 @@ class MainViewController: UIViewController {
         
         buttonMultiple.setTitle("x", for: .normal)
         buttonMultiple.setTitleColor(.white, for: .normal)
+        buttonMultiple.addTarget(self, action: #selector(multiple(_:)), for: .touchUpInside)
         return buttonMultiple
     }()
     
@@ -334,6 +342,7 @@ class MainViewController: UIViewController {
         
         buttonMinus.setTitle("-", for: .normal)
         buttonMinus.setTitleColor(.white, for: .normal)
+        buttonMinus.addTarget(self, action: #selector(minus(_:)), for: .touchUpInside)
         return buttonMinus
     }()
     
@@ -350,7 +359,7 @@ class MainViewController: UIViewController {
         
         buttonAdd.setTitle("+", for: .normal)
         buttonAdd.setTitleColor(.white, for: .normal)
-        buttonAdd.addTarget(self, action: #selector(add(_:)), for: .touchUpInside)
+        buttonAdd.addTarget(self, action: #selector(add), for: .touchUpInside)
         return buttonAdd
     }()
     
@@ -366,7 +375,7 @@ class MainViewController: UIViewController {
         buttonEqual.translatesAutoresizingMaskIntoConstraints = false
         buttonEqual.setTitleColor(.white, for: .normal)
         buttonEqual.setTitle("=", for: .normal)
-        
+        buttonEqual.addTarget(self, action: #selector(equal(_:)), for: .touchUpInside)
         return buttonEqual
     }()
     
@@ -569,25 +578,41 @@ class MainViewController: UIViewController {
         return buttonNine
     }()
     
-//MARK: - 기능 구현 코드
+    //MARK: - 기능 구현 코드
     
     // 더하기
-    @objc func add(_ button: UIButton) {
+    @objc func add() {
+        if self.displayNumber.count > 9 {
+            showAlert()
+        } else {
+            self.operation(.Add)
+        }
         
     }
     
     // 빼기
     @objc func minus(_ button: UIButton) {
-        
+ 
+        self.operation(.Minus)
+  
     }
     
     // 곱하기
     @objc func multiple(_ button: UIButton) {
+        self.operation(.Multiple)
         
+        if self.result.count > 9 {
+            showAlert()
+        }
     }
     
     // 나누기
     @objc func divide(_ button: UIButton) {
+        if self.displayNumber.count > 9 {
+            showAlert()
+        } else {
+            self.operation(.Divide)
+        }
         
     }
     
@@ -601,32 +626,15 @@ class MainViewController: UIViewController {
     
     // =
     @objc func equal(_ button: UIButton) {
-        
+        self.operation(.None)
     }
     
-    // +/-
+    // +/- -> 미구현
     @objc func signChange(_ button: UIButton) {
         // sign: true => 음수
         // sign: false => 양수
-        sign.toggle()
         
-        var index = displayNumber.index(displayNumber.startIndex, offsetBy: 0)
-        
-        if sign {
-            
-            if !self.displayNumber.contains("-") {
-                
-                self.displayNumber.insert("-", at: index)
-                self.resultLabel.text = self.displayNumber
-            }
-            
-        } else {
-            if self.displayNumber.contains("-") {
-                self.displayNumber.remove(at: index)
-                self.resultLabel.text = self.displayNumber
-            }
-            self.resultLabel.text = self.displayNumber
-        }
+
     }
     
     // AC
@@ -635,6 +643,7 @@ class MainViewController: UIViewController {
         self.firstInput = ""
         self.secondInput = ""
         self.result = ""
+        self.current = .None
         self.resultLabel.text = "0"
     }
     
@@ -643,17 +652,81 @@ class MainViewController: UIViewController {
         guard let number = button.title(for: .normal) else {
             return
         }
+        
         if self.displayNumber.count < 9 {
             self.displayNumber += number
             self.resultLabel.text = self.displayNumber
         }
     }
     
-    @objc func operation() {
+    // 기능별 작동사항
+    func operation(_ operation: Operation) {
+        if self.current != .None {
+            if !self.displayNumber.isEmpty {
+                // 처음 값 -> 기호 -> 둘째 값 -> 결과
+                
+                self.secondInput = self.displayNumber
+                self.displayNumber = ""
+                
 
+                guard var firstInput = Double(self.firstInput) else { return }
+                //                print("This is FirstInput \(firstInput)")
+                guard var secondInput = Double(self.secondInput) else { return }
+                //                print("This is SecondInput: \(secondInput)")
+                
+                switch self.current {
+                case .Add: // 더하기
+                    
+                    self.result = String(firstInput + secondInput)
+                    
+                case .Minus: // 빼기
+                    
+                    self.result = String(firstInput - secondInput)
+                    
+                case .Multiple: // 곱하기
+                    
+                    self.result = String(firstInput * secondInput)
+                    
+                case .Divide: // 나누기
+                    
+                    self.result = String(firstInput / secondInput)
+                   
+                    
+                default:
+                    break
+                }
+                
+                if let result = Double(self.result) {
+                    self.result = String(Int(result))
+                }
+                
+                self.firstInput = self.result
+                self.resultLabel.text = self.result
+                
+                
+                if self.result.count > 9 {
+                    showAlert()
+                }
+            }
+            
+            self.current = operation
+            
+        } else {
+            self.firstInput = self.displayNumber
+            self.current = operation
+            self.displayNumber = ""
+        }
     }
     
-
+    func showAlert() {
+        let alert = UIAlertController(title: "ERROR", message: "자릿수 10자리를 초과했습니다", preferredStyle: .alert)
+        let confirmAlert = UIAlertAction(title: "확인", style: .default) { _ in
+            self.resultLabel.text = String(0)
+        }
+        
+        alert.addAction(confirmAlert)
+        self.present(alert, animated: true)
+    }
+    
 }
-
 
