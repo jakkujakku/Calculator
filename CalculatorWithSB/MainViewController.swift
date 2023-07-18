@@ -687,11 +687,15 @@ class MainViewController: UIViewController {
                     
                     self.result = String(firstInput * secondInput)
                     
+                    
                 case .Divide: // 나누기
                     
-                    self.result = String(firstInput / secondInput)
-                   
-                    
+                    if secondInput != 0 {
+                        self.result = String(firstInput / secondInput)
+                    } else {
+                        NoDivideAlert()
+                    }
+
                 default:
                     break
                 }
@@ -720,6 +724,16 @@ class MainViewController: UIViewController {
     
     func showAlert() {
         let alert = UIAlertController(title: "ERROR", message: "자릿수 10자리를 초과했습니다", preferredStyle: .alert)
+        let confirmAlert = UIAlertAction(title: "확인", style: .default) { _ in
+            self.resultLabel.text = String(0)
+        }
+        
+        alert.addAction(confirmAlert)
+        self.present(alert, animated: true)
+    }
+    
+    func NoDivideAlert() {
+        let alert = UIAlertController(title: "ERROR", message: "0으로 나눌 수 없습니다", preferredStyle: .alert)
         let confirmAlert = UIAlertAction(title: "확인", style: .default) { _ in
             self.resultLabel.text = String(0)
         }
