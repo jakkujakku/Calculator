@@ -10,7 +10,7 @@ import UIKit
 // 해야하는 과정 && 조건
 // 1. UI 구성 ✅ -> 오토레이아웃 코드 일부 수정 필요(상수값 수정 바람)
 // 2. Calculator 구현 -> 더하기(+) ✅, 빼기(-) ✅, 곱하기(*) ✅, 나누기(/) ✅, 소수점 표시(.) ✅, 양/음 표시(+/-), 결과 출력 ✅
-// 3. 스위치 구문 사용해서 추상화 -> AbstractOperation (이거 어케해야함?)
+// 3. 스위치 구문 사용해서 추상화 -> AbstractOperation (이거 어케해야함?) ✅
 // 4. 조건 1: SB 사용 금지 ✅
 //    조건 2: 프로토콜 사용
 //    조건 3: 유지보수 용이하게 UI와 기능 분리 + 각 기능들 코드 분리할 것
@@ -34,6 +34,7 @@ class MainViewController: UIViewController {
     var result = ""
     var sign = false
     var current: Operation = .None
+    var firstValue = 0.0
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -51,6 +52,7 @@ class MainViewController: UIViewController {
         
         self.view.addSubview(label)
         label.text = displayNumber
+        print("54번 코드 : \(label.text)")
         label.textAlignment = .right
         label.numberOfLines = 1
         label.layer.borderWidth = 2
@@ -64,6 +66,7 @@ class MainViewController: UIViewController {
             label.heightAnchor.constraint(equalToConstant: 150), // Height
         ])
         
+        label.textColor = UIColor.white
         label.layer.cornerRadius = 8 // CornerRadius
         
         return label
@@ -525,17 +528,20 @@ class MainViewController: UIViewController {
             showAlert()
         } else {
             self.operation(.Add)
+            changeToggle()
         }
     }
     
     // 빼기
     @objc func minus(_ button: UIButton) {
         self.operation(.Subtract)
+        changeToggle()
     }
     
     // 곱하기
     @objc func multiple(_ button: UIButton) {
         self.operation(.Multiple)
+        changeToggle()
         
         if self.result.count > 9 {
             showAlert()
@@ -548,6 +554,7 @@ class MainViewController: UIViewController {
             showAlert()
         } else {
             self.operation(.Divide)
+            changeToggle()
         }
     }
     
@@ -568,8 +575,13 @@ class MainViewController: UIViewController {
     @objc func signChange(_ button: UIButton) {
         // sign: true => 음수
         // sign: false => 양수
-        
-
+        sign.toggle()
+        self.resultLabel.text = sign ? "-" + self.displayNumber : self.displayNumber
+    }
+    
+    func change(number: Double) -> Double {
+        var result = number
+        return sign ? number * -1 : result
     }
     
     // AC
@@ -580,40 +592,54 @@ class MainViewController: UIViewController {
         self.result = ""
         self.current = .None
         self.resultLabel.text = "0"
+        self.sign = false
     }
     
     // 키패드
     @objc func tapNumber(_ button: UIButton) {
-        guard let number = button.title(for: .normal) else {
-            return
-        }
+
+        guard var number = button.title(for: .normal) else { return }
         
         if self.displayNumber.count < 9 {
+            // sign 여부 > sign = true 인데, - 한번만 나와 있어야 함.
+            
             self.displayNumber += number
-            self.resultLabel.text = self.displayNumber
+            
+            print("626번 코드 : \(sign ? "-" + self.displayNumber : self.displayNumber)")
+            self.resultLabel.text = sign ? "-" + self.displayNumber : self.displayNumber
+            print("628번 코드 : \(self.resultLabel.text)")
+        }
+    }
+    
+    func changeToggle() {
+//        sign.toggle()
+        if sign == true {
+            sign = false
         }
     }
     
     // 기능별 작동사항
     func operation(_ operation: Operation) {
         if self.current != .None {
-            if !self.displayNumber.isEmpty {
+            if !self.displayNumber.isEmpty { // 디스플레이 값 있는 상태
                 // 처음 값 -> 기호 -> 둘째 값 -> 결과
                 
                 self.secondInput = self.displayNumber
                 self.displayNumber = ""
-
-                guard var firstInput = Double(self.firstInput) else { return }
+                
+//                guard var firstInput = Double(self.firstInput) else { return }
+                var firstInput = self.firstValue
+                print("646번 코드: \(firstInput)")
                 guard var secondInput = Double(self.secondInput) else { return }
-
+                secondInput = change(number: secondInput)
+                print("649번 코드 : \(secondInput)")
+                
                 switch self.current {
                 case .Add: // 더하기
                     let addResult = AddOperation().CalculatorAdd(firstInput, secondInput)
-                    
                     self.result = addResult
                 case .Subtract: // 빼기
                     let subtractResult = SubtractOperation().CalculatorSubtract(firstValue: firstInput, secondValue: secondInput)
-                    
                     self.result = subtractResult
                     
                 case .Multiple: // 곱하기
@@ -632,25 +658,42 @@ class MainViewController: UIViewController {
                     break
                 }
                 
-                if let result = Double(self.result) {
+                if let result = Double(self.result), result.truncatingRemainder(dividingBy: 1) == 0 {
                     self.result = String(Int(result))
                 }
                 
                 self.firstInput = self.result
                 self.resultLabel.text = self.result
-                
+
                 
                 if self.result.count > 9 {
                     showAlert()
                 }
             }
+            
             self.current = operation
+            
         } else {
+            // 디스플레이에 값 없는 상태
             self.firstInput = self.displayNumber
+            guard var firstInput = Double(self.firstInput) else { return }
+            self.firstValue = sign ? -1 * firstInput : firstInput
+//            firstInput = change(number: firstInput)
+            print("696번 코드 : \(firstInput)")
             self.current = operation
             self.displayNumber = ""
         }
+        print("700번 코드 First Value: \(self.firstInput)")
+        print("701번 코드 Second Value: \(self.secondInput)")
+        print("702번 코드 Result : \(self.result)")
     }
+    
+//    func changStringToDouble(value: String) -> String {
+//        var answer = Double(value)
+//        answer = sign ? (answer ?? 1) * -1 : answer
+//        var result = "\(answer)"
+//        return result
+//    }
     
     func showAlert() {
         let alert = UIAlertController(title: "ERROR", message: "자릿수 10자리를 초과했습니다", preferredStyle: .alert)
